@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>lokesh Gate Tracker-2030</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ NEO-BRUTALIST FOUNDATION ============ */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f3eee1;
+    --card: #fffdf5;
+    --row: #ffffff;
+    --ink: #141414;
+    --muted: #5c584e;
+    --accent: #ffd93d;
+    --green: #a3e635;
+    --bw: 3px;                 /* border width */
+    --shadow: 6px 6px 0 var(--ink);
+    --shadow-sm: 3px 3px 0 var(--ink);
+    --shadow-btn: 4px 4px 0 var(--ink);
+  }
+
+  body.dark {
+    --bg: #15141a;
+    --card: #211f28;
+    --row: #2b2934;
+    --ink: #f3efe3;
+    --muted: #a8a294;
+    --shadow: 6px 6px 0 #000;
+    --shadow-sm: 3px 3px 0 #000;
+    --shadow-btn: 4px 4px 0 #000;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    background-image: radial-gradient(var(--ink) 1.2px, transparent 1.2px);
+    background-size: 26px 26px;
+    color: var(--ink);
+    font-family: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .black-font { font-family: 'Archivo Black', 'Space Grotesk', system-ui, sans-serif; }
+
+  /* ============ STICKY TOP PROGRESS STRIP ============ */
+  #topstrip {
+    position: fixed; top: 0; left: 0; right: 0; height: 14px;
+    background: var(--card); border-bottom: var(--bw) solid var(--ink);
+    z-index: 100;
+  }
+  #topfill {
+    height: 100%; width: 0%;
+    background:
+      repeating-linear-gradient(45deg, rgba(0,0,0,.14) 0 8px, transparent 8px 16px),
+      var(--green);
+    transition: width .45s cubic-bezier(.2,.9,.3,1.2);
+  }
+
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 44px 22px 60px; }
+
+  /* ============ HERO ============ */
+  .hero { text-align: center; padding: 26px 0 10px; position: relative; }
+
+  .sticker {
+    display: inline-block; background: #ff6b6b; color: #141414;
+    border: var(--bw) solid #141414; box-shadow: var(--shadow-btn);
+    padding: 7px 16px; font-weight: 700; letter-spacing: 2px; font-size: 13px;
+    transform: rotate(-2deg); text-transform: uppercase;
+  }
+  .sticker.b { background: #4d96ff; transform: rotate(2deg); }
+  .sticker.c { background: var(--accent); transform: rotate(-1.5deg); }
+
+  h1.title {
+    font-family: 'Archivo Black', system-ui, sans-serif;
+    font-size: clamp(2.1rem, 6.4vw, 4.4rem);
+    line-height: 1.04; margin: 22px auto 14px; letter-spacing: -1px;
+    text-transform: lowercase;
+  }
+  h1.title .hl {
+    display: inline-block; background: var(--accent);
+    border: var(--bw) solid var(--ink); box-shadow: var(--shadow-sm);
+    padding: 0 14px; transform: rotate(-1.2deg); text-transform: none;
+  }
+  h1.title .yr { color: #ff6b6b; -webkit-text-stroke: 2px var(--ink); }
+  body.dark h1.title .yr { color: #ff85a1; }
+
+  .hero p.sub {
+    max-width: 640px; margin: 14px auto 0; color: var(--muted);
+    font-size: clamp(15px, 2vw, 18px); font-weight: 500;
+  }
+  .hero p.sub b { color: var(--ink); }
+
+  /* ============ DASHBOARD ============ */
+  .dash {
+    margin: 38px 0 10px; background: var(--card);
+    border: var(--bw) solid var(--ink); box-shadow: var(--shadow);
+    display: grid; grid-template-columns: 1fr auto; gap: 26px;
+    padding: 26px;
+  }
+  @media (max-width: 860px) { .dash { grid-template-columns: 1fr; } }
+
+  .dash .big {
+    font-family: 'Archivo Black', system-ui, sans-serif;
+    font-size: clamp(52px, 9vw, 84px); line-height: 1;
+  }
+  .dash .big small { font-size: .38em; color: var(--muted); }
+  .dash .label { font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+
+  .mainbar {
+    margin-top: 16px; height: 36px; background: var(--row);
+    border: var(--bw) solid var(--ink); overflow: hidden;
+  }
+  .mainbar > div {
+    height: 100%; width: 0%;
+    background:
+      repeating-linear-gradient(45deg, rgba(0,0,0,.14) 0 10px, transparent 10px 20px),
+      var(--green);
+    transition: width .45s cubic-bezier(.2,.9,.3,1.2);
+  }
+
+  .stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    border: var(--bw) solid var(--ink); background: var(--row);
+    padding: 6px 13px; font-weight: 700; font-size: 14px; box-shadow: var(--shadow-sm);
+  }
+  .chip b { font-family: 'Archivo Black', system-ui, sans-serif; }
+
+  .dash .side { display: flex; flex-direction: column; gap: 14px; justify-content: center; }
+
+  .searchbox { position: relative; }
+  .searchbox input {
+    width: 100%; min-width: 230px; font-family: inherit; font-size: 15px; font-weight: 600;
+    padding: 12px 14px 12px 42px; background: var(--row); color: var(--ink);
+    border: var(--bw) solid var(--ink); box-shadow: var(--shadow-sm); outline: none;
+  }
+  .searchbox input:focus { background: var(--card); transform: translate(-1px,-1px); box-shadow: 5px 5px 0 var(--ink); }
+  .searchbox .mag { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 17px; pointer-events: none; }
+
+  .btn {
+    font-family: inherit; font-weight: 700; font-size: 15px; letter-spacing: 1px;
+    text-transform: uppercase; cursor: pointer; color: var(--ink);
+    border: var(--bw) solid var(--ink); background: var(--accent);
+    padding: 12px 18px; box-shadow: var(--shadow-btn);
+    transition: transform .08s, box-shadow .08s;
+  }
+  .btn:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--ink); }
+  .btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+  .btn.blue { background: #4d96ff; }
+  .btn.red  { background: #ff6b6b; }
+  .btn.lime { background: var(--green); }
+
+  /* ============ SECTION JUMP NAV ============ */
+  .jumpnav {
+    display: flex; gap: 10px; overflow-x: auto; padding: 18px 2px 22px;
+    scrollbar-width: thin;
+  }
+  .jumpnav a {
+    flex: 0 0 auto; text-decoration: none; color: #141414;
+    font-weight: 700; font-size: 13px; letter-spacing: .5px;
+    border: var(--bw) solid #141414; box-shadow: var(--shadow-sm);
+    padding: 8px 13px; background: var(--c, var(--accent));
+    transform: rotate(-1deg); transition: transform .1s;
+    white-space: nowrap;
+  }
+  .jumpnav a:nth-child(even) { transform: rotate(1.2deg); }
+  .jumpnav a:hover { transform: translate(-2px,-2px) rotate(0deg); box-shadow: 5px 5px 0 #141414; }
+
+  /* ============ SECTION CARDS GRID ============ */
+  .grid {
+    display: grid; gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    align-items: start;
+  }
+  @media (max-width: 520px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    position: relative; background: var(--card);
+    border: var(--bw) solid var(--ink); box-shadow: var(--shadow);
+    scroll-margin-top: 34px;
+  }
+  .card-head {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--c); border-bottom: var(--bw) solid var(--ink);
+    padding: 15px 16px; color: #141414;
+  }
+  .icon-tile {
+    flex: 0 0 auto; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+    font-size: 24px; background: var(--card);
+    border: var(--bw) solid #141414; box-shadow: 3px 3px 0 #141414;
+  }
+  .sec-num { font-size: 11px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; opacity: .75; }
+  .card-head h2 { font-family: 'Archivo Black', system-ui, sans-serif; font-size: clamp(15px, 2vw, 19px); line-height: 1.15; }
+  .count-chip {
+    margin-left: auto; flex: 0 0 auto;
+    border: var(--bw) solid #141414; background: var(--card);
+    font-family: 'Archivo Black', system-ui, sans-serif; font-size: 14px;
+    padding: 5px 10px;
+  }
+
+  .secbar { height: 12px; background: var(--row); border-bottom: var(--bw) solid var(--ink); }
+  .secbar > div {
+    height: 100%; width: 0%; background: var(--c);
+    transition: width .4s cubic-bezier(.2,.9,.3,1.2);
+  }
+
+  .topics { padding: 16px; }
+
+  .group-label {
+    display: inline-block; background: var(--ink); color: var(--bg);
+    font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    padding: 5px 11px; margin: 14px 0 10px; transform: rotate(-.6deg);
+  }
+  .group-label:first-child { margin-top: 2px; }
+
+  .topic {
+    display: flex; align-items: flex-start; gap: 12px; cursor: pointer;
+    background: var(--row); border: var(--bw) solid var(--ink);
+    box-shadow: var(--shadow-sm); padding: 10px 12px; margin-bottom: 10px;
+    transition: transform .08s, box-shadow .08s, background .15s;
+    user-select: none;
+  }
+  .topic:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--ink); }
+  .topic input { position: absolute; opacity: 0; pointer-events: none; }
+
+  .box {
+    flex: 0 0 auto; width: 26px; height: 26px; margin-top: 1px;
+    border: var(--bw) solid var(--ink); background: var(--card);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 17px; color: transparent; line-height: 1;
+    transition: background .12s, color .12s, transform .12s;
+  }
+  .topic .t { font-size: 15px; font-weight: 600; line-height: 1.4; }
+
+  .topic.done { background: color-mix(in srgb, var(--green) 26%, var(--row)); }
+  .topic.done .box { background: var(--green); color: #141414; transform: rotate(-4deg) scale(1.06); }
+  .topic.done .t { text-decoration: line-through; text-decoration-thickness: 2.5px; opacity: .55; }
+
+  .topic.pop { animation: pop .28s ease; }
+  @keyframes pop { 40% { transform: scale(1.035) rotate(-.5deg); } }
+
+  .stamp {
+    display: none; position: absolute; top: 92px; right: 12px; z-index: 5;
+    background: var(--green); color: #141414;
+    border: 4px solid #141414; box-shadow: 4px 4px 0 #141414;
+    font-family: 'Archivo Black', system-ui, sans-serif; font-size: 15px;
+    padding: 6px 12px; transform: rotate(9deg); pointer-events: none;
+  }
+  .card.complete .stamp { display: block; animation: stampIn .35s cubic-bezier(.2,.9,.3,1.6); }
+  @keyframes stampIn { 0% { transform: rotate(9deg) scale(2.4); opacity: 0; } 100% { transform: rotate(9deg) scale(1); opacity: 1; } }
+
+  .card.complete { outline: 4px solid var(--green); outline-offset: 3px; }
+
+  .hidden { display: none !important; }
+  #empty-msg {
+    text-align: center; font-weight: 700; font-size: 18px; padding: 40px 10px;
+    border: var(--bw) dashed var(--ink); background: var(--card); box-shadow: var(--shadow);
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    margin-top: 56px; text-align: center; color: var(--muted);
+    font-weight: 600; font-size: 14px; line-height: 1.9;
+  }
+  footer .tag {
+    display: inline-block; background: var(--card); border: var(--bw) solid var(--ink);
+    box-shadow: var(--shadow-sm); padding: 12px 22px; transform: rotate(-.6deg);
+  }
+  footer .tag b { color: var(--ink); }
+
+  /* ============ CONFETTI ============ */
+  .confetti {
+    position: fixed; top: -24px; width: 13px; height: 13px;
+    border: 2px solid #141414; z-index: 999; pointer-events: none;
+    animation: fall 3.1s linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(112vh) rotate(var(--rot, 360deg)); opacity: .85; }
+  }
+</style>
+</head>
+<body>
+
+<div id="topstrip"><div id="topfill"></div></div>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <span class="sticker">🎯 Target: GATE 2030</span>
+    <h1 class="title">lokesh <span class="hl">Gate Tracker</span><span class="yr">-2030</span></h1>
+    <p class="sub">Every single topic of the <b>GATE Computer Science</b> syllabus — broken into
+      <b>96 checkboxes</b> across <b>10 sections</b>. Tick it. Track it. Smash it. 💥</p>
+  </header>
+
+  <!-- DASHBOARD -->
+  <section class="dash">
+    <div>
+      <div class="label">Overall syllabus coverage</div>
+      <div class="big"><span id="pct">0</span><small>%</small></div>
+      <div class="mainbar"><div id="mainfill"></div></div>
+      <div class="stats">
+        <span class="chip">✅ Topics done: <b id="stat-topics">0 / 96</b></span>
+        <span class="chip">📚 Sections cleared: <b id="stat-secs">0 / 10</b></span>
+        <span class="chip" id="chip-streak">🔥 Status: <b>Just getting started</b></span>
+      </div>
+    </div>
+    <div class="side">
+      <div class="searchbox">
+        <span class="mag">🔍</span>
+        <input id="search" type="text" placeholder="Search topics… e.g. “Bayes”" autocomplete="off">
+      </div>
+      <button class="btn blue" id="themeBtn">🌙 Dark mode</button>
+      <button class="btn red" id="resetBtn">⟲ Reset progress</button>
+    </div>
+  </section>
+
+  <!-- JUMP NAV -->
+  <nav class="jumpnav" id="jumpnav" aria-label="Jump to section"></nav>
+
+  <!-- SECTION CARDS -->
+  <main class="grid" id="grid"></main>
+
+  <div id="empty-msg" class="hidden">😢 No topics match that search.</div>
+
+  <footer>
+    <div class="tag">Built for <b>Lokesh</b> · Syllabus source: <b>GATE CS (IIT Madras — Organizing Institute)</b> · No excuses, only checkboxes. 🧱</div>
+  </footer>
+</div>
+
+<script>
+/* ================= SYLLABUS DATA (from CS_GATE2027_Syllabus.pdf) ================= */
+const SECTIONS = [
+  { n:'01', title:'Engineering Mathematics', short:'Engg Math', color:'#ff6b6b', icon:'🧮', groups:[
+    { g:'Discrete Mathematics', items:[
+      'Propositional and first order logic',
+      'Sets, relations and functions',
+      'Partial orders and lattices',
+      'Monoids and Groups',
+      'Graphs: connectivity, matching, colouring',
+      'Combinatorics: counting, recurrence relations, generating functions',
+    ]},
+    { g:'Linear Algebra', items:[
+      'Matrices and determinants',
+      'System of linear equations',
+      'Eigenvalues and eigenvectors',
+      'LU decomposition',
+    ]},
+    { g:'Calculus', items:[
+      'Limits, continuity and differentiability',
+      'Maxima and minima',
+      'Mean value theorem',
+      'Integration',
+    ]},
+    { g:'Probability and Statistics', items:[
+      'Random variables',
+      'Uniform, normal, exponential, Poisson and binomial distributions',
+      'Mean, median, mode and standard deviation',
+      'Conditional probability and Bayes theorem',
+    ]},
+  ]},
+  { n:'02', title:'Digital Logic', short:'Digital Logic', color:'#ffd93d', icon:'⚡', groups:[
+    { g:null, items:[
+      'Boolean algebra and minimization — algebraic technique',
+      'Karnaugh map (K-map) simplification',
+      'Tabular method (Quine–McCluskey)',
+      'Design of combinational circuits',
+      'Design of sequential circuits',
+      'Number representation and arithmetic (fixed and floating point)',
+    ]},
+  ]},
+  { n:'03', title:'Computer Organization and Architecture', short:'COA', color:'#4d96ff', icon:'🖥️', groups:[
+    { g:null, items:[
+      'Instruction set and addressing modes',
+      'Design of arithmetic and logic unit (ALU)',
+      'Control unit design — hardwired and microprogrammed',
+      'Memory interfacing and hierarchy: performance',
+      'Cache memory mapping',
+      'I/O interface (interrupt and DMA)',
+      'Instruction pipelining',
+      'Pipeline hazards',
+    ]},
+  ]},
+  { n:'04', title:'Programming and Data Structures', short:'Prog & DS', color:'#6bcb77', icon:'💻', groups:[
+    { g:null, items:[
+      'Programming in C',
+      'Recursion',
+      'Arrays',
+      'Stacks and queues',
+      'Linked lists',
+      'Trees and binary search trees',
+      'Binary heaps',
+      'Graphs',
+    ]},
+  ]},
+  { n:'05', title:'Algorithms', short:'Algorithms', color:'#ff9f45', icon:'⚙️', groups:[
+    { g:'Basics', items:[
+      'Searching',
+      'Sorting',
+      'Hashing',
+      'Asymptotic worst case time and space complexity',
+    ]},
+    { g:'Design Techniques', items:[
+      'Greedy algorithms',
+      'Dynamic programming',
+      'Divide-and-conquer',
+    ]},
+    { g:'Graph Algorithms', items:[
+      'Graph traversals (BFS / DFS)',
+      'Minimum spanning trees',
+      'Shortest paths',
+    ]},
+  ]},
+  { n:'06', title:'Theory of Computation', short:'TOC', color:'#b388ff', icon:'∞', groups:[
+    { g:null, items:[
+      'Regular expressions and finite automata',
+      'Context-free grammars and push-down automata',
+      'Regular and context-free languages',
+      'Pumping lemma',
+      'Turing machines',
+      'Undecidability',
+    ]},
+  ]},
+  { n:'07', title:'Compiler Design', short:'Compilers', color:'#2ec4b6', icon:'🔧', groups:[
+    { g:null, items:[
+      'Lexical analysis',
+      'Parsing',
+      'Syntax-directed translation',
+      'Runtime environments',
+      'Intermediate code generation',
+      'Local optimisation',
+      'Data flow analysis: constant propagation',
+      'Data flow analysis: liveness analysis',
+      'Data flow analysis: common sub expression elimination',
+    ]},
+  ]},
+  { n:'08', title:'Operating System', short:'OS', color:'#ff85a1', icon:'🗂️', groups:[
+    { g:null, items:[
+      'System calls',
+      'Processes and threads',
+      'Inter-process communication',
+      'Concurrency and synchronization',
+      'Deadlock',
+      'CPU scheduling',
+      'I/O scheduling',
+      'Memory management and virtual memory',
+      'File systems',
+    ]},
+  ]},
+  { n:'09', title:'Databases', short:'DBMS', color:'#a3e635', icon:'🗄️', groups:[
+    { g:null, items:[
+      'ER-model',
+      'Relational algebra',
+      'Tuple calculus',
+      'SQL',
+      'Integrity constraints',
+      'Normal forms',
+      'File organization',
+      'Indexing (B and B+ trees)',
+      'Transactions and concurrency control',
+    ]},
+  ]},
+  { n:'10', title:'Computer Networks', short:'Networks', color:'#f15bb5', icon:'🌐', groups:[
+    { g:'Fundamentals', items:[
+      'Principles of layering',
+      'Basics of switching (circuit, packet and virtual circuit)',
+      'Performance metrics',
+    ]},
+    { g:'Data Link Layer', items:[
+      'Error detection',
+      'Medium Access Control (MAC)',
+      'Ethernet',
+    ]},
+    { g:'Network Layer', items:[
+      'Distance vector and link state routing',
+      'IPv4 — Fragmentation',
+      'CIDR Notation',
+      'Network Address Translation (NAT)',
+    ]},
+    { g:'Transport Layer', items:[
+      'TCP — flow control and congestion control',
+      'Socket API',
+    ]},
+    { g:'Application Layer', items:[
+      'DNS and HTTP',
+    ]},
+  ]},
+];
+
+/* ================= STORAGE (graceful fallback for sandboxed previews) ================= */
+const KEY = 'lokeshGateTracker2030:v1';
+const store = (() => {
+  try {
+    localStorage.setItem('__probe__', '1');
+    localStorage.removeItem('__probe__');
+    return localStorage;
+  } catch (e) {
+    const mem = {};
+    return {
+      getItem: k => (k in mem ? mem[k] : null),
+      setItem: (k, v) => { mem[k] = String(v); },
+      removeItem: k => { delete mem[k]; },
+    };
+  }
+})();
+
+let state = { done: {}, theme: 'light' };
+try {
+  const raw = store.getItem(KEY);
+  if (raw) state = Object.assign(state, JSON.parse(raw));
+} catch (e) { /* start fresh */ }
+
+const save = () => { try { store.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+
+/* ================= BUILD UI ================= */
+const grid = document.getElementById('grid');
+const nav  = document.getElementById('jumpnav');
+let TOTAL = 0;
+const topicEls = {};   // id -> label element
+const secMeta  = [];   // per-section { ids, card, chip, fill }
+
+SECTIONS.forEach((sec, si) => {
+  TOTAL += sec.groups.reduce((a, g) => a + g.items.length, 0);
+
+  // nav chip
+  const a = document.createElement('a');
+  a.href = '#sec-' + si;
+  a.style.setProperty('--c', sec.color);
+  a.textContent = sec.n + ' · ' + sec.short;
+  nav.appendChild(a);
+
+  // card
+  const card = document.createElement('section');
+  card.className = 'card';
+  card.id = 'sec-' + si;
+  card.style.setProperty('--c', sec.color);
+  card.innerHTML = `
+    <div class="card-head">
+      <div class="icon-tile">${sec.icon}</div>
+      <div>
+        <div class="sec-num">Section ${sec.n}</div>
+        <h2>${sec.title}</h2>
+      </div>
+      <div class="count-chip">0/0</div>
+    </div>
+    <div class="secbar"><div></div></div>
+    <div class="topics"></div>
+    <div class="stamp">MASTERED 🏆</div>`;
+
+  const topicsBox = card.querySelector('.topics');
+  const ids = [];
+
+  sec.groups.forEach(grp => {
+    if (grp.g) {
+      const gl = document.createElement('div');
+      gl.className = 'group-label';
+      gl.textContent = grp.g;
+      topicsBox.appendChild(gl);
+    }
+    grp.items.forEach((text, ti) => {
+      const id = si + '-' + ti + '-' + grp.g;
+      ids.push(id);
+      const label = document.createElement('label');
+      label.className = 'topic';
+      label.dataset.search = text.toLowerCase();
+      label.innerHTML = `<input type="checkbox"><span class="box">✓</span><span class="t"></span>`;
+      label.querySelector('.t').textContent = text;
+      const input = label.querySelector('input');
+      input.checked = !!state.done[id];
+      if (input.checked) label.classList.add('done');
+      input.addEventListener('change', () => {
+        if (input.checked) state.done[id] = true; else delete state.done[id];
+        label.classList.toggle('done', input.checked);
+        label.classList.remove('pop'); void label.offsetWidth; label.classList.add('pop');
+        save(); refresh();
+      });
+      topicEls[id] = label;
+      topicsBox.appendChild(label);
+    });
+  });
+
+  grid.appendChild(card);
+  secMeta.push({ ids, card, chip: card.querySelector('.count-chip'), fill: card.querySelector('.secbar > div') });
+});
+
+/* ================= REFRESH / PROGRESS ================= */
+let lastPct = -1;
+
+function refresh() {
+  let done = 0, secsCleared = 0;
+
+  secMeta.forEach(sm => {
+    const c = sm.ids.filter(id => state.done[id]).length;
+    done += c;
+    const pct = Math.round(c / sm.ids.length * 100);
+    sm.chip.textContent = c + '/' + sm.ids.length;
+    sm.fill.style.width = pct + '%';
+    sm.card.classList.toggle('complete', c === sm.ids.length);
+    if (c === sm.ids.length) secsCleared++;
+  });
+
+  const pct = Math.round(done / TOTAL * 100);
+  document.getElementById('pct').textContent = pct;
+  document.getElementById('mainfill').style.width = pct + '%';
+  document.getElementById('topfill').style.width = pct + '%';
+  document.getElementById('stat-topics').textContent = done + ' / ' + TOTAL;
+  document.getElementById('stat-secs').textContent = secsCleared + ' / ' + SECTIONS.length;
+
+  const status = pct === 100 ? 'SYLLABUS CONQUERED 👑'
+    : pct >= 75 ? 'Endgame mode 🚀'
+    : pct >= 50 ? 'Halfway hero 🔥'
+    : pct >= 25 ? 'Momentum building ⚡'
+    : pct > 0   ? 'Warming up ☕'
+    : 'Just getting started';
+  document.getElementById('chip-streak').innerHTML = '🔥 Status: <b>' + status + '</b>';
+
+  if (pct === 100 && lastPct !== -1 && lastPct < 100) confetti();
+  lastPct = pct;
+}
+
+/* ================= CONFETTI ================= */
+function confetti() {
+  const colors = ['#ff6b6b','#ffd93d','#4d96ff','#6bcb77','#ff9f45','#b388ff','#2ec4b6','#ff85a1','#a3e635','#f15bb5'];
+  for (let i = 0; i < 130; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[i % colors.length];
+    c.style.animationDelay = (Math.random() * .9) + 's';
+    c.style.setProperty('--rot', (Math.random() * 900 - 450) + 'deg');
+    if (i % 3 === 0) c.style.borderRadius = '50%';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4200);
+  }
+}
+
+/* ================= THEME ================= */
+const themeBtn = document.getElementById('themeBtn');
+function applyTheme() {
+  document.body.classList.toggle('dark', state.theme === 'dark');
+  themeBtn.textContent = state.theme === 'dark' ? '☀️ Light mode' : '🌙 Dark mode';
+}
+themeBtn.addEventListener('click', () => {
+  state.theme = state.theme === 'dark' ? 'light' : 'dark';
+  save(); applyTheme();
+});
+
+/* ================= RESET (two-step confirm) ================= */
+const resetBtn = document.getElementById('resetBtn');
+let armed = false, armTimer = null;
+resetBtn.addEventListener('click', () => {
+  if (!armed) {
+    armed = true;
+    resetBtn.textContent = '⚠️ Sure? Click again';
+    resetBtn.classList.remove('red'); resetBtn.classList.add('lime');
+    armTimer = setTimeout(() => {
+      armed = false;
+      resetBtn.textContent = '⟲ Reset progress';
+      resetBtn.classList.remove('lime'); resetBtn.classList.add('red');
+    }, 3200);
+    return;
+  }
+  clearTimeout(armTimer); armed = false;
+  resetBtn.textContent = '⟲ Reset progress';
+  resetBtn.classList.remove('lime'); resetBtn.classList.add('red');
+  state.done = {};
+  save();
+  Object.values(topicEls).forEach(l => { l.classList.remove('done'); l.querySelector('input').checked = false; });
+  lastPct = -1;
+  refresh();
+});
+
+/* ================= SEARCH ================= */
+const searchInput = document.getElementById('search');
+const emptyMsg = document.getElementById('empty-msg');
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  let anyVisible = false;
+
+  secMeta.forEach((sm, si) => {
+    let visibleInSection = 0;
+    sm.card.querySelectorAll('.topic').forEach(row => {
+      const hit = !q || row.dataset.search.includes(q);
+      row.classList.toggle('hidden', !hit);
+      if (hit) visibleInSection++;
+    });
+    sm.card.querySelectorAll('.group-label').forEach(gl => {
+      let next = gl.nextElementSibling, any = false;
+      while (next && !next.classList.contains('group-label')) {
+        if (next.classList.contains('topic') && !next.classList.contains('hidden')) any = true;
+        next = next.nextElementSibling;
+      }
+      gl.classList.toggle('hidden', !any);
+    });
+    sm.card.classList.toggle('hidden', visibleInSection === 0 && !!q);
+    if (visibleInSection > 0) anyVisible = true;
+  });
+
+  emptyMsg.classList.toggle('hidden', anyVisible || !q);
+});
+
+/* ================= GO ================= */
+applyTheme();
+refresh();
+lastPct = Math.round(Object.keys(state.done).length / TOTAL * 100);
+</script>
+</body>
+</html>
