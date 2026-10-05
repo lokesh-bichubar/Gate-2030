@@ -92,7 +92,7 @@ python3 -m http.server 8000
 1. Push this repo to GitHub (commands below 👇)
 2. Repo → **Settings** → **Pages**
 3. Source: **Deploy from a branch** → `main` / `/ (root)` → **Save**
-4. Your tracker goes live at `https://<your-username>.github.io/lokesh-gate-tracker-2030/`
+4. Your tracker goes live at `https://lokesh-bichubar.github.io/Gate-2030/`
 
 ```bash
 git init
